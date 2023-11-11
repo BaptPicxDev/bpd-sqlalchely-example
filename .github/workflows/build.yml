@@ -1,0 +1,101 @@
+name: generate-documentation
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - 'Makefile'
+      - 'poetry.lock'
+      - 'pyproject.toml'
+      - 'tests'
+  pull_request:
+    branches: [main]
+
+jobs:
+  generate-documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="/home/${USER}/.local/bin:$PATH"
+          poetry --version
+
+      - name: Installing dependencies
+        run: |
+          poetry install --no-root
+
+      - name: generate documentation
+        run: make run-pdoc
+
+      - name: clean
+        run: make clean
+
+  run-pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="/home/${USER}/.local/bin:$PATH"
+          poetry --version
+
+      - name: Create virtual environment & install requirements
+        run: |
+          poetry install --no-root
+
+      - name: run-pytest
+        run: |
+          make run-pytest
+
+      - name: clean
+        run: |
+          make clean
+        
+  run-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="/home/${USER}/.local/bin:$PATH"
+          poetry --version
+
+      - name: Create virtual environment & install requirements
+        run: |
+          poetry install --no-root
+
+      - name: run-flake8
+        run: |
+          make run-flake8
+
+      - name: clean
+        run: |
+          make clean
