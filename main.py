@@ -4,6 +4,7 @@ from src.database import *
 from src.models import *
 from src.wsgi import *
 
+
 parser = argparse.ArgumentParser(
     prog='PoetryTest',
     description='This is a poetry tutorial',

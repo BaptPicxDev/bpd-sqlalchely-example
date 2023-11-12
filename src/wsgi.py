@@ -35,9 +35,8 @@ def get_api() -> FastAPI:
         return {"status_code": 200, "message": f"hello world: {new_task.uuid}"}
 
     @app.post("/status")
-    async def status(my_uuid: str) -> dict:
-        import uuid
-        r = conn.query(Task).filter(Task.uuid==uuid.UUID(my_uuid)).first()
+    async def status(uuid: str) -> dict:
+        r = Task.get_state_by_uuid(conn, uuid)
         return {"status_code": 200, "message": f"status: {r}"}
 
     return app

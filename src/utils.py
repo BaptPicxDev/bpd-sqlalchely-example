@@ -16,4 +16,4 @@ def get_date() -> dt.date:
 def generate_uuid() -> str:
     """Generate uuid as str.
     aaa_bbb_ccc_ddd."""
-    return uuid4()
+    return str(uuid4())
