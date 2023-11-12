@@ -35,6 +35,21 @@ class Task(Base):
         return task.state if task else None
 
     @classmethod
+    def update_task_status(cls, session, uuid_to_query: str, new_state: str) -> str:
+        """
+        Retrieve a Task using uuid.
+        Then update the state.
+
+        :param session: SQLAlchemy session
+        :param uuid_to_query: UUID to query
+        :return: Task state or None if not found
+        """
+        task = session.query(cls).filter(cls.uuid == uuid_to_query).first()
+        if task.state != new_state:
+            task.state = new_state
+            session.commit()
+
+    @classmethod
     def list_all_running(cls, session) -> list:
         """
         Retrieve all the Task objects which are running.
