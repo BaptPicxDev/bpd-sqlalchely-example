@@ -1,7 +1,7 @@
 import os
 from fastapi import (
-    UploadFile,
     FastAPI,
+    BackgroundTasks,
 )
 import uvicorn
 
@@ -15,6 +15,12 @@ from src.models import (
     Task,
     Base
 )
+
+def create_background_task(conn, uuid: str) -> None:
+    for i in range(5):
+        print(i)
+        Task.update_task_status(conn, uuid, "running", i)
+    Task.update_task_status(conn, uuid, "finished", 100)
 
 
 def get_api() -> FastAPI:
@@ -30,15 +36,24 @@ def get_api() -> FastAPI:
 
     @app.post("/create_task")
     async def create_task() -> dict:
-        new_task = Task(name="hep")
+        new_task = Task(name="hop")
         conn.add(new_task)
         conn.commit()
+        # Task.update_task_status(conn, new_task.uuid, "running")
         return {"status_code": 200, "message": f"hello world: {new_task.uuid}"}
 
     @app.post("/status")
     async def status(uuid: str) -> dict:
         r = Task.get_state_by_uuid(conn, uuid)
         return {"status_code": 200, "message": f"status: {r}"}
+
+    @app.post("/background")
+    async def create_background(background_task: BackgroundTasks) -> dict:
+        new_task = Task()
+        conn.add(new_task)
+        conn.commit()
+        background_task.add_task(create_background_task, conn, new_task.uuid)
+        return {"status_code": 201, "message": f"New task created: {new_task.uuid}"}
 
     return app
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, UUID
+from sqlalchemy import Column, Integer, String
 from sqlalchemy import CheckConstraint
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -18,9 +18,9 @@ class Task(Base):
 
     id = Column(Integer, nullable=False, unique=True, primary_key=True)
     timestamp = Column(String, nullable=False, default=get_datetime_ymdhms)
-    name = Column(String, nullable=False)
     uuid = Column(String, nullable=False, unique=True, default=generate_uuid)
     state = Column(String, CheckConstraint("state IN ('created', 'running', 'finished')"), nullable=False, default="created")
+    percentage = Column(Integer, CheckConstraint("percentage >= 0 AND percentage <= 100"), nullable=False, default=0)
 
     @classmethod
     def get_state_by_uuid(cls, session, uuid_to_query: str) -> str:
@@ -35,7 +35,7 @@ class Task(Base):
         return task.state if task else None
 
     @classmethod
-    def update_task_status(cls, session, uuid_to_query: str, new_state: str) -> str:
+    def update_task_status(cls, session, uuid_to_query: str, new_state: str, new_percentage: int) -> str:
         """
         Retrieve a Task using uuid.
         Then update the state.
@@ -47,7 +47,9 @@ class Task(Base):
         task = session.query(cls).filter(cls.uuid == uuid_to_query).first()
         if task.state != new_state:
             task.state = new_state
-            session.commit()
+        if task.percentage != new_percentage:
+            task.percentage = new_percentage
+        session.commit()
 
     @classmethod
     def list_all_running(cls, session) -> list:
@@ -60,7 +62,7 @@ class Task(Base):
         return (
             session
             .query(cls)
-            .select(cls.name, cls.timestamp, cls.uuid)
+            .select(cls.timestamp, cls.uuid, cls.percentage)
             .filter(cls.state=="running")
             .all()
         )
@@ -75,7 +77,7 @@ class Task(Base):
         """
         return (
             session
-            .query(cls.name, cls.timestamp, cls.uuid, cls.state)
+            .query(cls.timestamp, cls.uuid, cls.state, cls.percentage)
             .all()
         )
 
