@@ -8,6 +8,13 @@ def get_datetime(timezone="Europe/Paris") -> dt.datetime:
     return dt.datetime.now(tz=tz.gettz(timezone))
 
 
+def get_datetime_ymdhms() -> str:
+    """Get current datetime for timezone.
+    Use format %Year-%month-day %Hour:%Minute:%Second.
+    as string."""
+    return get_datetime().strftime("%Y-%m-%d %H:%M:%S")
+
+
 def get_date() -> dt.date:
     """Get current date."""
     return get_datetime().date()

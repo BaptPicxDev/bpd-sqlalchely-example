@@ -25,6 +25,7 @@ def get_api() -> FastAPI:
 
     @app.get("/")
     async def index() -> dict:
+        print(Task.list_all(conn))
         return {"status_code": 200, "message": "hello world"}
 
     @app.post("/create_task")
