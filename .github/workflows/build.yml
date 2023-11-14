@@ -99,3 +99,12 @@ jobs:
       - name: clean
         run: |
           make clean
+
+  run-quality-dockerfile:
+    runs-on: ubuntu-latest
+    name: Hadolint
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: deploy/Dockerfile
