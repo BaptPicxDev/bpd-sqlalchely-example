@@ -1,9 +1,5 @@
 import argparse
 
-from src.database import *
-from src.models import *
-from src.wsgi import *
-
 
 parser = argparse.ArgumentParser(
     prog='PoetryTest',
@@ -22,5 +18,9 @@ if __name__ == "__main__":
     if args.dev:
         print("Dev mode.")
     else:
+        from src.database import *
+        from src.models import *
+        from src.wsgi import *
+
         app = get_api()
         run_wsgi(app)
