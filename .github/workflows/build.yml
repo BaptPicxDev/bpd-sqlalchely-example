@@ -104,9 +104,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Hadolint
     steps:
-      - uses: actions/checkout@v3
-      - uses: hadolint/hadolint-action@v3.1.0
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run hadolint on Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: ./**/*Dockerfile*
-          # recursive: true
+          dockerfile: deploy/Dockerfile
+          no-fail: true
+
+      - name: Run hadolint on Dockerfile.v2
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: deploy/Dockerfile.v2
           no-fail: true
